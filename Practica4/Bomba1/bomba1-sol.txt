@@ -1,0 +1,28 @@
+Para intentar descifrar la contraseña, lo primero que hacemos es poner un punto de ruptura en la función que encripta, la cual es encriptar.
+
+Aqui podemos ver que el parametro que hemos metido nosotros como contraseña lo que hace es meterlo en el registro %r8. Luego comienza un for.
+
+Lo que hace el programa es simplemente un for e ir sumando 2 a cada posición del char. Esto lo hace tantas veces como es la loguitud del char ya codificado. Esto lo podemos ver si nos fijamos en las ordenes repnz scas %es:(%rdi),%al, donde se calcula la longuitud de la cadena codificada.
+
+Vemos que entre los saltos está la instrucción add $0x2,%eax, la cual lo que hace es sumar dos en cada posición ya que como hemos dicho antes es un for. 
+
+Para acceder a la palabra ya codificada, lo que hacemos es irnos a la posición del main donde la contraseña se pasa a %rsi e imprimimos esta.
+
+(gdb) br *main+116
+(gdb) p(char*    )$rsi
+
+Esto nos muestra que la contraseña codificada es: "ejkokejcpic\n"
+Como el programa para codificarla le suma 2 lo que nosotros haremos es restarselos. Obtendremos la siguiente cadena "chimichanga".
+
+Comprobamos y es certificamos que es esta la contraseña, relanzando el programa con la contraseña correcta:
+
+run < <(echo -e chimichanga\\n123\\n)
+
+Para sacar el pin va a ser más facil, ya que como vemos, no está codificado. Simplemente lo que podemos hacer es mostrarlo:
+
+(gdb) br *main+247
+(gdb) p(char*    )passcode
+
+Esto nos devuelve el numero 1492
+
+Probamos si este es el código y efectivamente, conseguimos desactivar la bomba.
